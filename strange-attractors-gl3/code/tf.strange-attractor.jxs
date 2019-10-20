@@ -1,11 +1,17 @@
 <jittershader name="tf.strange-attractor.jxs">
 	<description>Transform Feedback Strange Attractors</description>
 	<param name="position" type="vec3" state="POSITION" />
+	<param name="velocity" type="vec3" state="NORMAL" />
 	<param name="speed" type="float" default="1" />
+	<param name="speed_lo" type="float" default="1" />
+	<param name="speed_hi" type="float" default="1" />
 	<param name="attractor" type="int" default="1" />
 	<language name="glsl" version="1.5">
 		<bind param="position" program="vp" />
+		<bind param="velocity" program="vp" />
 		<bind param="speed" program="vp" />
+		<bind param="speed_lo" program="vp" />
+		<bind param="speed_hi" program="vp" />
 		<bind param="attractor" program="vp" />
 		<program name="vp" type="vertex">
 
@@ -31,14 +37,20 @@ float g;
 float dt;
 
 uniform float speed;
+uniform float speed_lo;
+uniform float speed_hi;
 uniform int attractor;
 
 in vec3 position;
+in vec3 velocity;
 
 out vec3 Position1;
+out vec3 Velocity1;
 
 void main() {
 	vec3 pos = position;
+	float pSpeed = (velocity.x * abs(speed_hi - speed_lo) + min(speed_lo, speed_hi)) * speed;
+	// float pSpeed = speed * velocity.x;
 	float x = position.x;
 	float y = position.y;
 	float z = position.z;
@@ -47,7 +59,7 @@ void main() {
 
 	// lorenz attractor
 	if (attractor == 1){
-		dt = 0.005 * speed;
+		dt = 0.005 * pSpeed;
 		a = 10;
 		b = 28;
 		c = 8/3;
@@ -59,7 +71,7 @@ void main() {
 
 	// Arneodo Attractor
 	else if (attractor == 2){
-		dt = 0.015 * speed;
+		dt = 0.015 * pSpeed;
 		a = -5.5;
 		b = 3.5;
 		c = -1;
@@ -71,7 +83,7 @@ void main() {
 
 	// Burke - Shaw Attractor
 	else if (attractor == 3){
-		dt = 0.003 * speed;
+		dt = 0.003 * pSpeed;
 		a = 10;
 		b = 4.272;
 
@@ -82,7 +94,7 @@ void main() {
 	
 	// Chen - Lee Attractor
 	else if (attractor == 4){
-		dt = 0.002 * speed;	
+		dt = 0.002 * pSpeed;	
 		a = 5;
 		b = -10;
 		c = -0.38;
@@ -94,7 +106,7 @@ void main() {
 	
 	// Aizawa Attractor
 	else if (attractor == 5){
-		dt = 0.01 * speed;
+		dt = 0.01 * pSpeed;
 		a = 0.95;
 		b = 0.7;
 		c = 0.1;
@@ -109,7 +121,7 @@ void main() {
 	
 	// Thomas Attractor
 	else if (attractor == 6){
-		dt = 0.05 * speed;	
+		dt = 0.05 * pSpeed;	
 		a = 0.19;
 
 		dx = dt * (-a * x + sin(y));
@@ -119,7 +131,7 @@ void main() {
 
 	// lorenz mod2 attractor
 	else if (attractor == 7){
-		dt = 0.005 * speed;
+		dt = 0.005 * pSpeed;
 		a = 0.9;
 		b = 5;
 		c = 9.9;
@@ -132,7 +144,7 @@ void main() {
 	
 	// Hadley Attractor
 	else if (attractor == 8){
-		dt = 0.005 * speed;		
+		dt = 0.005 * pSpeed;		
 		a = 0.2;
 		b = 4;
 		c = 8;
@@ -145,7 +157,7 @@ void main() {
 	
 	// Halvorsen Attractor
 	else if (attractor == 9){
-		dt = 0.005 * speed;
+		dt = 0.005 * pSpeed;
 		a = 1.4;
 
 		dx = dt * (-a*x - 4*y - 4*z - y*y);
@@ -155,7 +167,7 @@ void main() {
 	
 	// Three-Scroll Unified Chaotic System Attractor
 	else if (attractor == 10){
-		dt = 0.002 * speed;	
+		dt = 0.002 * pSpeed;	
 		a = 40;
 		b = 0.833;
 		c = 20;
@@ -169,7 +181,7 @@ void main() {
 	
 	// Coullet Attractor
 	else if (attractor == 11){
-		dt = 0.04 * speed;	
+		dt = 0.04 * pSpeed;	
 		a = 0.8;
 		b = -1.1;
 		c = -0.45;
@@ -182,7 +194,7 @@ void main() {
 
 	// Dadras Attractor
 	else if (attractor == 12){
-		dt = 0.01 * speed;
+		dt = 0.01 * pSpeed;
 		a = 3;
 		b = 2.7;
 		c = 1.7;
@@ -197,6 +209,7 @@ void main() {
 	vec3 attractorForce = vec3(dx, dy, dz);
 	
 	Position1 = position + attractorForce;
+	Velocity1 = velocity;
 }
 ]]>
 		</program>
